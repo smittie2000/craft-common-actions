@@ -1,0 +1,49 @@
+name: "Launch check: latest release of every app (fork only)"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: ${{ matrix.repo }}
+    runs-on: windows-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { repo: cadcraft, exe: cadcraft.exe }
+          - { repo: craft-anything, exe: craft-anything.exe }
+          - { repo: craft-launcher, exe: artcraft-launcher.exe }
+          - { repo: deckcraft, exe: deckcraft.exe }
+          - { repo: designcraft, exe: designcraft.exe }
+          - { repo: effectcraft, exe: effectcraft.exe }
+          - { repo: figcraft, exe: figcraft.exe }
+          - { repo: filmcraft, exe: filmcraft.exe }
+          - { repo: gridcraft, exe: gridcraft.exe }
+          - { repo: lightcraft, exe: lightcraft.exe }
+          - { repo: materialcraft, exe: materialcraft.exe }
+          - { repo: pdfcraft, exe: pdfcraft.exe }
+          - { repo: photocraft, exe: photocraft.exe }
+          - { repo: soundcraft, exe: soundcraft.exe }
+          - { repo: texturecraft, exe: texturecraft.exe }
+          - { repo: vectorcraft, exe: vectorcraft.exe }
+          - { repo: wordcraft, exe: wordcraft.exe }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download latest x64 MSI
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = gh release list -R storytold/${{ matrix.repo }} -L 1 --exclude-drafts --json tagName --jq '.[0].tagName'
+          "release: $tag"
+          gh release download $tag -R storytold/${{ matrix.repo }} -p '*windows-x64.msi' -D msi
+          "MSI=$((Get-ChildItem msi\*.msi | Select-Object -First 1).FullName)" >> $env:GITHUB_ENV
+      - uses: ./actions/windows-launch-check
+        with:
+          msi: ${{ env.MSI }}
+          main-exe: ${{ matrix.exe }}
