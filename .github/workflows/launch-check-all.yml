@@ -2,6 +2,9 @@ name: "Launch check: latest release of every app (fork only)"
 
 on:
   workflow_dispatch:
+  push:
+    branches: [launch-check-probe]
+    paths: [".github/workflows/launch-check-all.yml"]
 
 permissions:
   contents: read

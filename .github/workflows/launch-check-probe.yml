@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [launch-check-probe]
+    paths: [".github/workflows/launch-check-probe.yml", "actions/windows-launch-check/**"]
 
 permissions:
   contents: read
