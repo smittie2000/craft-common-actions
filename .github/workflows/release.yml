@@ -207,6 +207,7 @@ jobs:
           app-title: ${{ inputs.app-title }}
 
   macos:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 90
     name: macOS universal
     needs: [version]
@@ -487,7 +488,7 @@ jobs:
       # The runner is x64: it runs x64 and x86 programs, not arm64 ones.
       - name: Launch check (winget-pkgs validation)
         if: inputs.windows-launch-check && matrix.arch != 'arm64'
-        uses: storytold/craft-common-actions/actions/windows-launch-check@main
+        uses: smittie2000/craft-common-actions/actions/windows-launch-check@windows-launch-check
         with:
           msi: dist/release/*-windows-${{ matrix.arch }}.msi
           main-exe: ${{ inputs.windows-main-exe != '' && inputs.windows-main-exe || format('{0}.exe', inputs.app-name) }}
@@ -498,6 +499,7 @@ jobs:
           if-no-files-found: error
 
   linux:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 90
     name: Linux ${{ matrix.arch }}
     needs: [version]
@@ -608,6 +610,7 @@ jobs:
           if-no-files-found: error
 
   flatpak:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 90
     name: Flatpak ${{ matrix.arch }}
     needs: [version, linux]
@@ -740,8 +743,8 @@ jobs:
           if-no-files-found: error
 
   arch:
+    if: false # fork-only e2e: just git-sources + version + windows
     name: Arch Linux ${{ matrix.arch }}
-    if: inputs.has-arch
     needs: [version, linux]
     runs-on: ubuntu-24.04
     strategy:
@@ -785,8 +788,8 @@ jobs:
           if-no-files-found: error
 
   freebsd:
+    if: false # fork-only e2e: just git-sources + version + windows
     name: FreeBSD ${{ matrix.arch }}
-    if: inputs.has-freebsd
     needs: [version]
     runs-on: ubuntu-latest
     timeout-minutes: 300
@@ -1056,9 +1059,9 @@ jobs:
 
 
   web:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 90
     name: Web (wasm)
-    if: inputs.has-web
     needs: [version]
     runs-on: ubuntu-latest
     env:
@@ -1155,9 +1158,9 @@ jobs:
           if-no-files-found: error
 
   linux-riscv64:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 90
     name: Linux riscv64
-    if: inputs.has-riscv64
     needs: [version]
     # Not 22.04 like the other Linux jobs: Ubuntu never built jammy's ncurses security update for
     # riscv64, so the amd64 and riscv64 libtinfo6 can't match and the cross deps don't install (#44).
@@ -1271,9 +1274,9 @@ jobs:
           if-no-files-found: error
 
   server:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 90
     name: Server Linux ${{ matrix.arch }}
-    if: inputs.has-server
     needs: [version]
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -1326,9 +1329,9 @@ jobs:
           if-no-files-found: error
 
   release:
+    if: false # fork-only e2e: just git-sources + version + windows
     timeout-minutes: 10
     name: Draft GitHub Release
-    if: "!cancelled() && !contains(needs.*.result, 'failure')"
     needs: [version, macos, windows, linux, linux-riscv64, flatpak, arch, freebsd, web, server]
     runs-on: ubuntu-latest
     environment: release
